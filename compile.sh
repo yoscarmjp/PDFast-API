@@ -1,0 +1,1 @@
+g++ main.cpp src/cpp/*.cpp -lm -lpthread -lredis++ -lssl -lcrypto -lhiredis -std=c++20 -o app

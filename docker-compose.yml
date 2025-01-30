@@ -4,6 +4,22 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    volumes:
+      - ./PDF:/usr/src/app/PDF
     ports:
       - "8003:8003"
     command: ./app
+    depends_on:
+      - redis
+    restart: always
+
+  redis:
+    image: redis:latest
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+volumes:
+  redis_data:
