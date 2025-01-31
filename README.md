@@ -30,7 +30,7 @@ Once you finish setting up the environment you can directly start the applicatio
 ## 2.0 Available endpoints
 The current deployed endpoints are
 
-- `GET` | `/token` -> Returns a CSRF token and a Session_id that expires in  `60`seconds.
+- `GET` | `/token` -> Returns a CSRF token and a Session_id that expires in  `60` seconds.
 - `GET` | `/PDF/string/string/int` -> Returns the PDF matching its path with the name as `int.pdf` (1.pdf, 2.pdf, ...)
 - `POST` | `/PDF/string/string/int` -> Creates or change a PDF in that path (If the directory does not exist, it makes a new one) but it will need the `csrf_token` and `session_id` tokens as provided from `GET` | `/token`
 
