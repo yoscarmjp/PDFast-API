@@ -6,7 +6,7 @@
 #include <random>
 
 std::unordered_map<std::string, std::string> ENV = load_env_file(".env");
-sw::redis::Redis redis("tcp://redis:6379");
+sw::redis::Redis redis(ENV["REDIS_URL"]);
 
 std::string generate_csrf_token() {
     std::random_device rd;

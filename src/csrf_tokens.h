@@ -12,8 +12,16 @@
 **/
 std::string generate_csrf_token();
 
+/**
+ * A function that validates a CSRF token with the one stored in the Redis database.
+ * @param req The request object -> crow::request
+ * @return True if the token is valid, false otherwise -> bool
+**/
 bool validate_csrf_token(const crow::request& req);
 
+/*
+* The Redis database object
+*/
 extern sw::redis::Redis redis;
 
 #endif
