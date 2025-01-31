@@ -1,15 +1,13 @@
 #include "../controller.h"
 #include "../csrf_tokens.h"
 #include "../token_encryption.h"
-#include "../env_loader.h"
 #include <fstream>
 #include <sstream>
 #include <iostream>
 #include <filesystem>
 
-extern std::unordered_map<std::string, std::string> ENV;
 
-void setup_routes(crow::SimpleApp& app) {
+void setup_routes(crow::App<crow::CORSHandler> app) {
     CROW_ROUTE(app, "/")([]() {
         return "Hello, World!";
     });
