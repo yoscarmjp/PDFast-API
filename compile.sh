@@ -12,7 +12,6 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-
 end_time=$(date +%s)
 elapsed_time=$((end_time - start_time))
 
@@ -23,3 +22,14 @@ border=$(printf "%${len}s" | tr ' ' ' ')
 echo "     ┏ $border ┓"
 echo "     ┃ $msg ┃"
 echo "     ┗ $border ┛"
+
+# This script compiles the whole C++ project with G++
+# And it returns 2 possible messages depending if the compilation was successful or not
+
+#    ┏                                    ┓
+#    ┃       ❌ Compilation failed!       ┃
+#    ┗                                    ┛
+
+#    ┏                                    ┓
+#    ┃ Compilation finished: 20s elapsed. ┃
+#    ┗                                    ┛

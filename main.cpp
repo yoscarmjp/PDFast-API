@@ -12,5 +12,5 @@ int main() {
         .headers("Content-Type, Authorization, session_id, csrf_token");
 
     setup_routes(app);
-    app.bindaddr("0.0.0.0").port(8003).multithreaded().run();
+    app.bindaddr(ENV["CROW_HOST"]).port(stoi(ENV["CROW_PORT"])).multithreaded().run();
 }

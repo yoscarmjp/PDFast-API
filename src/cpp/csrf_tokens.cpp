@@ -20,19 +20,19 @@ std::string generate_csrf_token() {
     return token;
 }
 
-bool validate_csrf_token(const crow::request& req) {
-    std::string salt = ENV["ENCRYPTION_KEY"];
-    int rounds = std::stoi(ENV["ENCRYPTION_ROUNDS"]);
-    std::string session_id = req.get_header_value("session_id");
-    std::string csrf_token = req.get_header_value("csrf_token");
+bool validate_csrf_token(const std::string& csrf_token, const std::string& session_id) {
+    const char* salt = std::getenv("ENCRYPTION_KEY");
+    const char* rounds_str = std::getenv("ENCRYPTION_ROUNDS");
+    if (!salt || !rounds_str || csrf_token.empty() || session_id.empty()) return false;
 
-    if (session_id.empty() || csrf_token.empty()) return false;
-
+    int rounds = std::stoi(rounds_str);
     std::string encrypted_csrf_token = encrypt_token(csrf_token, salt, rounds);
     std::string encrypted_session_id = encrypt_token(session_id, salt, rounds);
 
     std::optional<std::string> csrf_token_from_redis = redis.get("csrf_token:" + encrypted_session_id);
-    std::cout << "NEW CSRF TOKEN GENERATED TO EXPIRE IN 60 SECONDS" << std::endl; // Required for the code to work (Probably a bug related to async?)
+
+    std::cout << "NEW CSRF TOKEN GENERATED TO EXPIRE IN 60 SECONDS" << std::endl;
 
     return csrf_token_from_redis && *csrf_token_from_redis == encrypted_csrf_token;
 }
+

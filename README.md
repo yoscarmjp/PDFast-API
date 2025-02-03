@@ -14,11 +14,13 @@ Can be changed in `Dockerfile`, `docker-compose.yml`, `main.cpp`
 ## 1.1 Setting up the application
 You will need to create an `.env` file in the root directory with the following variables:
 
- - `ALLOWED_HOSTS` => URL
- - `ENCRYPTION_ROUNDS` => INT
- - `ENCRYPTION_KEY` => Some string as a salt
- - `REDIS_URL` => TCP local URL
- - `CROW_PORT` => INT
+- `CORS_ORIGIN` => `STRING` (Full URL of permitted website)
+- `ALLOWED_HOSTS` => `STRING` (Sub + Domain of host)
+- `ENCRYPTION_ROUNDS` => `INT`
+- `ENCRYPTION_KEY` => `STRING` (Salt for encryption)
+- `REDIS_URL` => `STRING` (tcp://redis:6379 default)
+- `CROW_PORT` => `INT` (8003 default)
+- `CROW_HOST` => `STRING` (0.0.0.0 default)
 
 Keep in mind that the default redis URL is
 `tcp://redis:6379`
