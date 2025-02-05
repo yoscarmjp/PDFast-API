@@ -8,7 +8,7 @@
  * @brief Setup the routes for the application
  * @param app The crow::SimpleApp instance
 **/
-void setup_routes(crow::App<crow::CORSHandler> app);
+void setup_routes(crow::App<crow::CORSHandler>& app);
 
 /**
  * Environment variables from .env

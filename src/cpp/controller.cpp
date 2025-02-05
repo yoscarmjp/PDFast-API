@@ -54,7 +54,7 @@ void processCodeHTTP(crow::response& res, int code){
     res.end();
 }
 
-void setup_routes(crow::App<crow::CORSHandler> app) {
+void setup_routes(crow::App<crow::CORSHandler>& app) {
 
     // ________________________________________________________________ HELLO WORLD ________________________________________________________________
     CROW_ROUTE(app, "/")([]() {
