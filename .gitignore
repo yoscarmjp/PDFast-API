@@ -1,8 +1,10 @@
 a.out
 app
-./PDF/*
-./PDF/*/*
-./PDF/*/*/*.pdf
-PDF/*
-PDF
+./Mangas/*
+./Mangas/*/*
+Mangas/*
+./Media/*
+./Media/*/*
+./Media/Profiles/*
+./Media/Profiles/*/*
 .env

@@ -1,11 +1,14 @@
 version: '3.8'
 services:
   server:
+    container_name: pdfast_api_server
     build:
       context: .
       dockerfile: Dockerfile
     volumes:
-      - ./PDF:/usr/src/app/PDF
+      - ./Mangas:/usr/src/app/Mangas
+      - ./Media:/usr/src/app/Media
+
     ports:
       - "8003:8003"
     command: ./app
@@ -14,6 +17,7 @@ services:
     restart: always
 
   redis:
+    container_name: pdfast_api_redis
     image: redis:latest
     restart: always
     ports:

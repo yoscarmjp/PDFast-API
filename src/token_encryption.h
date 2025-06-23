@@ -29,11 +29,4 @@ std::string encrypt_token(const std::string& token, const std::string& key, int 
 **/
 std::string toHex(const std::vector<unsigned char>& data);
 
-/**
-* @brief Converts a hex string to a vector of bytes
-* @param hex The hex string to convert
-* @return The vector of bytes
-**/
-std::vector<unsigned char> fromHex(const std::string& hex);
-
 #endif

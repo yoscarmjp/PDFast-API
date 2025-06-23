@@ -2,7 +2,8 @@
 
 start_time=$(date +%s)
 
-g++ main.cpp src/cpp/*.cpp -lm -lpthread -lredis++ -lssl -lcrypto -lhiredis -std=c++20 -o app
+g++ main.cpp src/cpp/*.cpp -Wall -Werror -pedantic -lm -lpthread -lredis++ -lssl -lcrypto -lhiredis -std=c++20 -o app
+
 if [ $? -ne 0 ]; then
     echo "\e[31m"
     echo "     ┏                                    ┓"
