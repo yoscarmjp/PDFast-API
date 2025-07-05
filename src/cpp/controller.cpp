@@ -11,7 +11,7 @@ using namespace sw::redis;
 
 // Configuración
 static const std::unordered_set<std::string> VALID_EXTENSIONS = {
-    "jpg", "jpeg", "png", "webp", "gif", "bmp", "tiff"
+    "jpg", "jpeg", "png", "webp", "gif", "bmp", "tiff", "mp4"
 };
 
 static const std::unordered_map<int, std::string> MESSAGES = {
@@ -176,10 +176,19 @@ void handleFileWrite(crow::response& res, const crow::request& req, const std::s
 // ────────────────────────
 
 void setup_routes(crow::App<crow::CORSHandler>& app) {
-    // Token Generation (se mantiene igual)
     CROW_ROUTE(app, "/token/<int>")
     .methods("GET"_method)([](const crow::request& req, crow::response& res, int max_uses) {
-        // ... (código existente)
+        if (!validateRequest(req, res)) return;
+        std::string session_id = generate_csrf_token();
+        std::string csrf_token = generate_csrf_token();
+        std::string encrypted_csrf_token = encrypt_token(csrf_token, ENV["ENCRYPTION_KEY"], std::stoi(ENV["ENCRYPTION_ROUNDS"]));
+
+        redis.setex("csrf_token:" + encrypt_token(session_id, ENV["ENCRYPTION_KEY"], std::stoi(ENV["ENCRYPTION_ROUNDS"])), 3600, encrypted_csrf_token);
+        redis.setex("token_uses:" + encrypt_token(session_id, ENV["ENCRYPTION_KEY"], std::stoi(ENV["ENCRYPTION_ROUNDS"])), 3600, std::to_string(max_uses));
+        
+        res.write(crow::json::wvalue({{"session_id", session_id}, {"csrf_token", csrf_token}, {"max_uses", max_uses}}).dump());
+        res.add_header("Content-Type", "application/json");
+        res.end();
     });
 
     // ──────────── Manga Pages ────────────
