@@ -232,6 +232,7 @@ void setup_routes(crow::App<crow::CORSHandler>& app) {
         if (!validateRequest(req, res) || !validateCSRF(req, res)) return;
         
         std::string content_type = req.get_header_value("Content-Type");
+        std::cout << "Content-Type recibido: " << content_type << std::endl;
         if (content_type.empty() || content_type.find("image/") == std::string::npos) {
             processCodeHTTP(res, 400);
             return;
@@ -255,33 +256,42 @@ void setup_routes(crow::App<crow::CORSHandler>& app) {
     // GET: /Media/Profiles/<user>/bannerpicture.<ext>
     CROW_ROUTE(app, "/Media/Profiles/<string>/<string>")
     .methods("GET"_method)([](
-        const crow::request& req, 
-        crow::response& res, 
-        std::string user, 
+        const crow::request& req,
+        crow::response& res,
+        std::string user,
         std::string filename
     ) {
         if (!validateRequest(req, res)) return;
-        
-        // Verificar que el filename sea profilepicture o bannerpicture
+    
         size_t dot_pos = filename.find_last_of('.');
         if (dot_pos == std::string::npos) {
-            processCodeHTTP(res, 400);
+            // No tiene extensión, buscamos archivo existente con extensiones válidas
+            for (const auto& ext : VALID_EXTENSIONS) {
+                std::string path = "Media/" + user + "/" + filename + "." + ext;
+                if (std::filesystem::exists(path)) {
+                    handleFileRead(res, path);
+                    return;
+                }
+            }
+            // No se encontró ninguno con extensiones válidas
+            processCodeHTTP(res, 404);
             return;
         }
-        
+    
+        // Si tiene extensión, validar y servir como antes
         std::string name = filename.substr(0, dot_pos);
         std::string ext = filename.substr(dot_pos + 1);
-        
+    
         if (name != "profilepicture" && name != "bannerpicture") {
             processCodeHTTP(res, 400);
             return;
         }
-        
+    
         if (VALID_EXTENSIONS.find(ext) == VALID_EXTENSIONS.end()) {
             processCodeHTTP(res, 400);
             return;
         }
-        
+    
         std::string path = "Media/" + user + "/" + filename;
         handleFileRead(res, path);
     });
@@ -354,7 +364,8 @@ void setup_routes(crow::App<crow::CORSHandler>& app) {
         if (!validateRequest(req, res) || !validateCSRF(req, res)) return;
         
         std::string content_type = req.get_header_value("Content-Type");
-        if (content_type.empty() || content_type.find("image/") == std::string::npos) {
+        if (content_type.empty() || 
+            (content_type.find("image/") == std::string::npos && content_type.find("video/") == std::string::npos)) {
             processCodeHTTP(res, 400);
             return;
         }
@@ -367,7 +378,60 @@ void setup_routes(crow::App<crow::CORSHandler>& app) {
         
         std::string path = "Media/" + user + "/Posts/" + post_id + "/" + std::to_string(page) + "." + extension;
         handleFileWrite(res, req, path);
+    }); 
+
+    // ──────────── Media: Group Posts ────────────
+    // GET: /Media/Profiles/<user>/Groups/<post_id>/<page>.<ext>
+    CROW_ROUTE(app, "/Media/Profiles/<string>/Groups/<string>/<int>")
+    .methods("GET"_method)([](
+        const crow::request& req, 
+        crow::response& res, 
+        std::string user, 
+        std::string post_id, 
+        int page
+    ) {
+        if (!validateRequest(req, res)) return;
+        
+        std::string base_path = "Media/" + user + "/Groups/" + post_id + "/" + std::to_string(page);
+        
+        for (const auto& ext : VALID_EXTENSIONS) {
+            std::string path = base_path + "." + ext;
+            if (std::filesystem::exists(path)) {
+                handleFileRead(res, path);
+                return;
+            }
+        }
+        
+        processCodeHTTP(res, 404);
     });
+
+    // POST: /Media/Profiles/<user>/Groups/<post_id>/<page>
+    CROW_ROUTE(app, "/Media/Profiles/<string>/Groups/<string>/<int>")
+    .methods("POST"_method)([](
+        const crow::request& req, 
+        crow::response& res, 
+        std::string user, 
+        std::string post_id, 
+        int page
+    ) {
+        if (!validateRequest(req, res) || !validateCSRF(req, res)) return;
+        
+        std::string content_type = req.get_header_value("Content-Type");
+        if (content_type.empty() || 
+            (content_type.find("image/") == std::string::npos && content_type.find("video/") == std::string::npos)) {
+            processCodeHTTP(res, 400);
+            return;
+        }
+        
+        std::string extension = content_type.substr(content_type.find("/") + 1);
+        if (VALID_EXTENSIONS.find(extension) == VALID_EXTENSIONS.end()) {
+            processCodeHTTP(res, 400);
+            return;
+        }
+        
+        std::string path = "Media/" + user + "/Groups/" + post_id + "/" + std::to_string(page) + "." + extension;
+        handleFileWrite(res, req, path);
+    }); 
 
     // ──────────── Media: Website Assets ────────────
     // GET: /Media/Website/<type>/<filename>
